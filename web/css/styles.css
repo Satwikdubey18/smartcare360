@@ -1,0 +1,819 @@
+/* ============================================================
+   SmartCare 360 – Styles
+   ============================================================
+   Dark navy + cyan premium theme.
+   Optimised for Samsung Galaxy Tab A7 Lite (1005 × 600 CSS px)
+   in landscape mode — no scrolling on home / symptom screens.
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   CSS Custom Properties (easy to tweak)
+   ---------------------------------------------------------- */
+:root {
+  /* Colours */
+  --navy-dark:    #0a1628;
+  --navy:         #0f1f3c;
+  --navy-light:   #162a50;
+  --navy-card:    #1a2f54;
+  --cyan:         #00d4ff;
+  --cyan-glow:    #00d4ff44;
+  --cyan-dim:     #00a3cc;
+  --teal:         #00bcd4;
+  --white:        #f0f4f8;
+  --white-dim:    #b0bec5;
+  --red:          #ff4444;
+  --red-dark:     #cc0000;
+  --green:        #00e676;
+  --amber:        #ffc107;
+
+  /* Layout */
+  --header-h:     52px;
+  --footer-h:     32px;
+  --radius:       12px;
+  --radius-sm:    8px;
+
+  /* Fonts — system stack, no external loading */
+  --font:         -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                  "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ----------------------------------------------------------
+   Reset & Base
+   ---------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;              /* no scrolling in landscape */
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--white);
+  background: var(--navy-dark);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Touch targets ≥ 48px */
+button, .touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* ----------------------------------------------------------
+   Header
+   ---------------------------------------------------------- */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 100;
+  border-bottom: 1px solid var(--cyan-glow);
+}
+
+/* Animated ECG line in the header */
+.ecg-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+}
+
+.ecg-line::after {
+  content: "";
+  display: block;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--cyan) 20%,
+    transparent 20.5%,
+    transparent 40%,
+    var(--cyan) 42%,
+    var(--cyan) 44%,
+    transparent 44.5%,
+    transparent 46%,
+    var(--cyan) 48%,
+    transparent 52%,
+    transparent 60%,
+    var(--cyan) 80%,
+    transparent 100%
+  );
+  animation: ecg-scroll 3s linear infinite;
+}
+
+@keyframes ecg-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Logo / emblem */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+}
+
+.logo-emblem {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--teal));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  animation: rotate-emblem 8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes rotate-emblem {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, var(--cyan), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Header right section */
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Status pill */
+.status-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.status-connected {
+  background: rgba(0, 230, 118, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.status-demo {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--amber);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-detecting {
+  background: rgba(0, 212, 255, 0.15);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  animation: pulse-pill 1.5s ease-in-out infinite;
+}
+
+.status-offline {
+  background: rgba(255, 68, 68, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+@keyframes pulse-pill {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* Emergency 112 button */
+.btn-emergency-112 {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease, background 0.15s ease;
+  min-height: 36px;
+}
+
+.btn-emergency-112:active {
+  transform: scale(0.95);
+  background: var(--red-dark);
+}
+
+/* ----------------------------------------------------------
+   Footer
+   ---------------------------------------------------------- */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy);
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  z-index: 100;
+}
+
+.footer-text {
+  font-size: 10px;
+  color: var(--white-dim);
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ----------------------------------------------------------
+   Screens (pages)
+   ---------------------------------------------------------- */
+.screen {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  bottom: var(--footer-h);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  display: none;
+  opacity: 1;
+}
+
+.screen-active {
+  display: flex;
+  flex-direction: column;
+  animation: fade-in 0.3s ease both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------
+   Home Screen
+   ---------------------------------------------------------- */
+#screen-home {
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--cyan);
+  padding-left: 4px;
+}
+
+.section-label-emergency {
+  color: var(--red);
+}
+
+/* Symptom & Emergency grids */
+.symptom-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.emergency-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* Cards */
+.symptom-card,
+.emergency-card {
+  background: var(--navy-card);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: var(--radius);
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  animation: stagger-in 0.4s ease both;
+  min-height: 48px;
+}
+
+.symptom-card:active,
+.emergency-card:active {
+  transform: scale(0.96);
+}
+
+.symptom-card:hover,
+.symptom-card:focus-visible {
+  border-color: var(--cyan);
+}
+
+.emergency-card {
+  border-color: rgba(255, 68, 68, 0.25);
+}
+
+.emergency-card:hover,
+.emergency-card:focus-visible {
+  border-color: var(--red);
+}
+
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.symptom-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.symptom-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--white);
+}
+
+/* ----------------------------------------------------------
+   Detail Screen (Symptom / Emergency)
+   ---------------------------------------------------------- */
+#screen-detail {
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.detail-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--cyan), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.detail-warning {
+  background: rgba(255, 68, 68, 0.12);
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.detail-steps {
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.detail-steps li {
+  counter-increment: step;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--white-dim);
+  padding-left: 28px;
+  position: relative;
+}
+
+.detail-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 20px;
+  height: 20px;
+  background: var(--navy-light);
+  border: 1px solid var(--cyan-glow);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.btn-dispense {
+  flex: 1;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--cyan), var(--teal));
+  color: var(--navy-dark);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  min-height: 52px;
+}
+
+.btn-dispense:active {
+  transform: scale(0.97);
+}
+
+.btn-dispense:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-back {
+  padding: 14px 20px;
+  background: var(--navy-light);
+  color: var(--white);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  min-height: 52px;
+}
+
+.btn-back:active {
+  transform: scale(0.97);
+}
+
+.detail-emergency-btn {
+  padding: 10px 16px;
+  background: rgba(255, 68, 68, 0.15);
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  min-height: 48px;
+}
+
+.detail-emergency-btn:active {
+  transform: scale(0.95);
+}
+
+/* ----------------------------------------------------------
+   Dispensing Screen
+   ---------------------------------------------------------- */
+#screen-dispensing {
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.dispensing-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+/* Servo arm animation */
+.servo-container {
+  width: 160px;
+  height: 160px;
+  position: relative;
+}
+
+.servo-base {
+  width: 40px;
+  height: 40px;
+  background: var(--navy-card);
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.servo-base::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--cyan);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.servo-arm {
+  width: 4px;
+  height: 70px;
+  background: var(--cyan);
+  border-radius: 2px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: top center;
+  transform: translate(-50%, 0) rotate(0deg);
+  z-index: 1;
+  transition: transform 0.6s ease;
+}
+
+.servo-active {
+  animation: servo-swing 1.4s ease-in-out infinite;
+}
+
+@keyframes servo-swing {
+  0%   { transform: translate(-50%, 0) rotate(-85deg); }
+  50%  { transform: translate(-50%, 0) rotate(85deg); }
+  100% { transform: translate(-50%, 0) rotate(-85deg); }
+}
+
+.dispensing-compartment {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--cyan);
+  opacity: 0.3;
+}
+
+/* ----------------------------------------------------------
+   Result Screen
+   ---------------------------------------------------------- */
+#screen-result {
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.result-icon {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.result-success {
+  animation: check-pop 0.5s ease both;
+}
+
+@keyframes check-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-error {
+  animation: shake 0.4s ease both;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.result-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.result-message {
+  font-size: 14px;
+  color: var(--white-dim);
+}
+
+.result-mode-label {
+  font-size: 11px;
+  color: var(--cyan-dim);
+  padding: 4px 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 20px;
+}
+
+.btn-home {
+  margin-top: 12px;
+  padding: 14px 32px;
+  background: var(--navy-light);
+  color: var(--white);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  min-height: 52px;
+}
+
+.btn-home:active {
+  transform: scale(0.97);
+}
+
+/* ----------------------------------------------------------
+   Settings Screen (hidden panel)
+   ---------------------------------------------------------- */
+#screen-settings {
+  gap: 12px;
+  padding: 20px 32px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.settings-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white-dim);
+}
+
+.settings-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--navy-card);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.settings-input:focus {
+  border-color: var(--cyan);
+}
+
+.settings-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-settings {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease;
+  min-height: 48px;
+}
+
+.btn-settings:active {
+  transform: scale(0.97);
+}
+
+.btn-settings-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--teal));
+  color: var(--navy-dark);
+}
+
+.btn-settings-secondary {
+  background: var(--navy-light);
+  color: var(--white);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.settings-result {
+  font-size: 13px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  min-height: 20px;
+}
+
+.settings-ok {
+  color: var(--green);
+  background: rgba(0, 230, 118, 0.1);
+}
+
+.settings-err {
+  color: var(--red);
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* ----------------------------------------------------------
+   Reduced motion preference
+   ---------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ecg-line::after,
+  .logo-emblem,
+  .servo-active,
+  .symptom-card,
+  .emergency-card,
+  .result-success,
+  .result-error,
+  .screen-active,
+  .status-detecting {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   Scrollbar (subtle, for detail screens)
+   ---------------------------------------------------------- */
+.screen::-webkit-scrollbar {
+  width: 4px;
+}
+
+.screen::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.screen::-webkit-scrollbar-thumb {
+  background: var(--cyan-glow);
+  border-radius: 2px;
+}
+
+/* ----------------------------------------------------------
+   Landscape tablet adjustments (Galaxy Tab A7 Lite ~1005×600)
+   ---------------------------------------------------------- */
+@media (min-width: 800px) and (max-height: 650px) {
+  .symptom-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .emergency-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .symptom-card,
+  .emergency-card {
+    padding: 10px 6px;
+  }
+  .symptom-icon {
+    font-size: 24px;
+  }
+  .symptom-title {
+    font-size: 11px;
+  }
+}
+
+/* Small phones (portrait fallback) */
+@media (max-width: 500px) {
+  .symptom-grid,
+  .emergency-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a1628">
+  <meta name="description" content="SmartCare 360 — Smart Healthcare Kiosk Dashboard">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SmartCare 360</title>
+
+  <!-- Web App Manifest (installable PWA) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ======================================================
+       HEADER — always visible
+       ====================================================== -->
+  <header class="header">
+    <!-- ECG animated line -->
+    <div class="ecg-line"></div>
+
+    <!-- Logo (long-press 3 s → settings) -->
+    <div class="header-logo" id="header-logo" role="button" aria-label="SmartCare 360 — long press for settings">
+      <div class="logo-emblem" aria-hidden="true">+</div>
+      <span class="logo-text">SMARTCARE 360</span>
+    </div>
+
+    <!-- Right side: status pill + emergency button -->
+    <div class="header-right">
+      <span class="status-pill status-detecting" id="status-pill">Connecting…</span>
+      <button class="btn-emergency-112" id="btn-emergency-112" aria-label="Emergency, call 112">
+        🚨 Emergency 112
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================================================
+       SCREEN: HOME — symptom & emergency grids
+       ====================================================== -->
+  <main class="screen screen-active" id="screen-home" aria-hidden="false">
+    <span class="section-label">Select Your Symptom</span>
+    <div class="symptom-grid" id="symptom-grid" role="list">
+      <!-- Cards injected by app.js from config.js data -->
+    </div>
+
+    <span class="section-label section-label-emergency">🚨 Emergency First Aid</span>
+    <div class="emergency-grid" id="emergency-grid" role="list">
+      <!-- Cards injected by app.js from config.js data -->
+    </div>
+  </main>
+
+  <!-- ======================================================
+       SCREEN: DETAIL — symptom/emergency info + dispense
+       ====================================================== -->
+  <section class="screen" id="screen-detail" aria-hidden="true">
+    <div class="detail-header">
+      <span class="detail-icon" id="detail-icon"></span>
+      <h1 class="detail-title" id="detail-title"></h1>
+    </div>
+
+    <!-- Warning box (chest pain red text, or generic emergency) -->
+    <div class="detail-warning" id="detail-warning" style="display:none" role="alert"></div>
+
+    <!-- First-aid steps -->
+    <ol class="detail-steps" id="detail-steps">
+      <!-- Steps injected by app.js -->
+    </ol>
+
+    <!-- Action buttons -->
+    <div class="detail-actions">
+      <button class="btn-back" aria-label="Go back to home">← Back</button>
+      <button class="btn-dispense" id="detail-dispense" aria-label="Dispense medicine packet">
+        Dispense Packet
+      </button>
+      <button class="detail-emergency-btn" id="detail-emergency-112" aria-label="Emergency, call 112">
+        🚨 Emergency? Call 112
+      </button>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SCREEN: DISPENSING — servo animation
+       ====================================================== -->
+  <section class="screen" id="screen-dispensing" aria-hidden="true">
+    <span class="dispensing-label" id="dispensing-status">Dispensing…</span>
+
+    <!-- Servo arm animation -->
+    <div class="servo-container">
+      <div class="servo-base"></div>
+      <div class="servo-arm" id="servo-animation"></div>
+    </div>
+
+    <span class="dispensing-compartment" id="dispensing-letter" aria-hidden="true"></span>
+  </section>
+
+  <!-- ======================================================
+       SCREEN: RESULT — success / error
+       ====================================================== -->
+  <section class="screen" id="screen-result" aria-hidden="true">
+    <span class="result-icon" id="result-icon"></span>
+    <h2 class="result-title" id="result-title"></h2>
+    <p class="result-message" id="result-message"></p>
+    <span class="result-mode-label" id="result-mode"></span>
+    <button class="btn-home" id="result-home">← Home</button>
+  </section>
+
+  <!-- ======================================================
+       SCREEN: SETTINGS — hidden panel (long-press logo)
+       ====================================================== -->
+  <section class="screen" id="screen-settings" aria-hidden="true">
+    <h2 class="settings-title">⚙️ Connection Settings</h2>
+
+    <div class="settings-group">
+      <label class="settings-label" for="settings-device-id">Device ID</label>
+      <input class="settings-input" type="text" id="settings-device-id" placeholder="e.g. sc360-7f3k9q">
+    </div>
+
+    <div class="settings-group">
+      <label class="settings-label" for="settings-token">Token</label>
+      <input class="settings-input" type="text" id="settings-token" placeholder="demo-token-2024">
+    </div>
+
+    <div class="settings-group">
+      <label class="settings-label" for="settings-broker">MQTT Broker (wss://)</label>
+      <input class="settings-input" type="url" id="settings-broker" placeholder="wss://broker.hivemq.com:8884/mqtt">
+    </div>
+
+    <div class="settings-result" id="settings-test-result"></div>
+
+    <div class="settings-actions">
+      <button class="btn-settings btn-settings-primary" id="settings-save">Save & Reconnect</button>
+      <button class="btn-settings btn-settings-secondary" id="settings-test">Test Connection</button>
+      <button class="btn-settings btn-settings-secondary" id="settings-back">← Back</button>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FOOTER — disclaimer on every screen
+       ====================================================== -->
+  <footer class="footer">
+    <span class="footer-text">College demonstration with dummy packets. Not a medical diagnosis or prescription. In an emergency, call 112.</span>
+  </footer>
+
+  <!-- ======================================================
+       SCRIPTS
+       ====================================================== -->
+  <!-- Config MUST load first (SC360 object) -->
+  <script src="js/config.js"></script>
+  <!-- Connection manager (uses SC360) -->
+  <script src="js/connection.js"></script>
+  <!-- App logic (uses SC360 + Connection) -->
+  <script src="js/app.js"></script>
+
+  <!-- Service Worker registration -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(function (err) {
+        console.warn("SW registration failed:", err);
+      });
+    }
+  </script>
+
+</body>
+</html>

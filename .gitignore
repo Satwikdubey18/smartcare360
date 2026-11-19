@@ -1,0 +1,29 @@
+# SmartCare 360 – .gitignore
+
+# Secrets (Wi-Fi password, tokens — NEVER push these)
+firmware/SmartCare360/secrets.h
+
+# Generated files
+firmware/SmartCare360/dashboard_html.h
+
+# Arduino build output
+firmware/SmartCare360/build/
+*.elf
+*.bin
+*.map
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Node modules (if any)
+node_modules/
+
+# Vercel
+.vercel/
