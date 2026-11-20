@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="SmartCare 360 — Smart Healthcare Kiosk">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SmartCare 360</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ================================================================
+     HEADER
+     ================================================================ -->
+<header class="header">
+  <div class="ecg-line"></div>
+
+  <!-- Logo — long-press 3 s → settings -->
+  <div class="header-logo" id="header-logo" role="button" aria-label="SmartCare 360 — long press for settings" tabindex="0">
+    <div class="logo-emblem" aria-hidden="true"><span>+</span></div>
+    <span class="logo-text">SMARTCARE 360</span>
+  </div>
+
+  <div class="header-right">
+    <span class="header-patient-name" id="header-patient-name" style="display:none" aria-live="polite"></span>
+    <button class="btn-end-session" id="btn-end-session" style="display:none" aria-label="End session">
+      ✕ End session
+    </button>
+    <span class="status-pill status-detecting" id="status-pill">Connecting…</span>
+    <button class="btn-emergency-112" id="btn-emergency-112" aria-label="Emergency, call 112">
+      🚨 Emergency 112
+    </button>
+  </div>
+</header>
+
+<!-- ================================================================
+     SCREEN: CHECK-IN
+     ================================================================ -->
+<main class="screen screen-active" id="screen-checkin" aria-hidden="false">
+  <div class="checkin-card">
+    <h1 class="checkin-title">Welcome to SMARTCARE 360</h1>
+    <p class="checkin-sub">Please enter your details to continue</p>
+
+    <div class="field-group">
+      <label class="field-label" for="checkin-name">Full Name</label>
+      <input class="field-input" type="text" id="checkin-name"
+             placeholder="e.g. Priya Sharma"
+             autocomplete="name" autocorrect="off" spellcheck="false"
+             aria-describedby="checkin-name-err">
+      <span class="field-error" id="checkin-name-err" aria-live="polite"></span>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="checkin-mobile">Mobile Number</label>
+      <div class="field-row">
+        <span class="field-prefix">+91</span>
+        <input class="field-input" type="tel" id="checkin-mobile"
+               placeholder="9876543210" maxlength="10"
+               autocomplete="tel-national" inputmode="numeric"
+               aria-describedby="checkin-mobile-err">
+      </div>
+      <span class="field-error" id="checkin-mobile-err" aria-live="polite"></span>
+    </div>
+
+    <button class="btn-continue" id="checkin-continue" disabled aria-label="Continue to dashboard">
+      Continue →
+    </button>
+    <p class="checkin-privacy">Your details are used only for this visit and are cleared automatically.</p>
+  </div>
+</main>
+
+<!-- ================================================================
+     SCREEN: HOME — two giant tiles
+     ================================================================ -->
+<section class="screen" id="screen-home" aria-hidden="true">
+  <p class="home-greeting" id="home-greeting">Good morning</p>
+
+  <div class="home-tiles">
+    <button class="home-tile home-tile-diag" id="home-diagnosis" aria-label="Diagnosis guidance">
+      <span class="home-tile-icon">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="12" y="8" width="40" height="48" rx="4"/>
+          <line x1="20" y1="22" x2="44" y2="22"/>
+          <line x1="20" y1="30" x2="44" y2="30"/>
+          <line x1="20" y1="38" x2="34" y2="38"/>
+          <circle cx="44" cy="44" r="6"/><line x1="48.2" y1="48.2" x2="52" y2="52"/>
+        </svg>
+      </span>
+      <span class="home-tile-title">Diagnosis Guidance</span>
+      <span class="home-tile-sub">8 common symptoms · first aid + packet</span>
+    </button>
+
+    <button class="home-tile home-tile-emerg" id="home-emergency" aria-label="Emergency help">
+      <span class="home-tile-icon">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="32,8 58,54 6,54"/>
+          <line x1="32" y1="26" x2="32" y2="40"/>
+          <circle cx="32" cy="46" r="2.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span class="home-tile-title">Emergency Help</span>
+      <span class="home-tile-sub">🚨 Call 112 · 4 emergencies · free kit</span>
+    </button>
+  </div>
+
+  <div class="home-qr-strip">📲 Scan QR · Coming soon</div>
+</section>
+
+<!-- ================================================================
+     SCREEN: DIAGNOSIS GRID — 4 × 2
+     ================================================================ -->
+<section class="screen" id="screen-diagnosis" aria-hidden="true">
+  <div class="grid-header">
+    <button class="grid-back btn-back-home" aria-label="Back to home">←</button>
+    <span class="grid-title">Select your symptom</span>
+  </div>
+  <div id="diagnosis-grid" role="list" aria-label="Symptom list"></div>
+</section>
+
+<!-- ================================================================
+     SCREEN: EMERGENCY GRID — 2 × 2
+     ================================================================ -->
+<section class="screen" id="screen-emergency" aria-hidden="true">
+  <div class="grid-header grid-header-emerg">
+    <button class="grid-back btn-back-home" aria-label="Back to home">←</button>
+    <span class="grid-title">Emergency First Aid</span>
+    <button class="emerg-112-banner" id="emerg-grid-112" aria-label="Call 112">
+      🚨 CALL 112 NOW
+    </button>
+  </div>
+  <div id="emergency-grid" role="list" aria-label="Emergency list"></div>
+</section>
+
+<!-- ================================================================
+     SCREEN: DETAIL — two columns
+     ================================================================ -->
+<section class="screen" id="screen-detail" aria-hidden="true">
+
+  <!-- Left: first aid info -->
+  <div class="detail-left">
+    <div class="detail-icon-row">
+      <span class="detail-icon" id="detail-icon" aria-hidden="true"></span>
+      <h2 class="detail-title" id="detail-title"></h2>
+    </div>
+
+    <div class="detail-warning" id="detail-warning" style="display:none" role="alert"></div>
+
+    <span class="detail-section-label" id="detail-help-label">What may help</span>
+    <ol class="detail-help-list" id="detail-help-list"></ol>
+
+    <div class="detail-doctor" id="detail-doctor"></div>
+
+    <p class="detail-call-112">Emergency? Call <strong style="color:var(--red)">112</strong></p>
+  </div>
+
+  <!-- Right: packet + actions -->
+  <div class="detail-right">
+    <div class="detail-packet-card">
+      <span class="detail-packet-letter" id="detail-packet-letter">A</span>
+      <span class="detail-comp-info" id="detail-comp-info"></span>
+      <span class="detail-price" id="detail-price"></span>
+    </div>
+
+    <div class="detail-emerg-note" id="detail-emerg-note" style="display:none">
+      🚨 No payment barrier in emergencies. Dispensed free.
+    </div>
+
+    <button class="btn-dispense" id="detail-dispense">Dispense packet</button>
+    <button class="btn-back-nav" id="detail-back" aria-label="Go back">← Back</button>
+  </div>
+</section>
+
+<!-- ================================================================
+     SCREEN: PAYMENT
+     ================================================================ -->
+<section class="screen" id="screen-payment" aria-hidden="true">
+
+  <div class="payment-left">
+    <h2 class="payment-title">Payment</h2>
+    <span class="payment-demo-badge">DEMO PAYMENT – no real money is charged</span>
+
+    <div class="order-table">
+      <div class="order-row">
+        <span class="order-label">Patient</span>
+        <span class="order-value" id="pay-patient-name"></span>
+      </div>
+      <hr class="order-divider">
+      <div class="order-row">
+        <span class="order-label">Item</span>
+        <span class="order-value" id="pay-item"></span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Compartment</span>
+        <span class="order-value" id="pay-comp"></span>
+      </div>
+      <hr class="order-divider">
+      <div class="order-row">
+        <span class="order-label">Amount</span>
+        <span class="order-value order-price" id="pay-price"></span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Order ID</span>
+        <span class="order-value" id="pay-order-id"></span>
+      </div>
+    </div>
+
+    <div class="payment-actions">
+      <button class="btn-simulate" id="pay-simulate">✓ Simulate Payment</button>
+      <button class="btn-pay-cancel" id="pay-cancel">✕ Cancel</button>
+    </div>
+  </div>
+
+  <div class="payment-right">
+    <div class="qr-container">
+      <span class="qr-label">Scan QR · Demo only</span>
+      <img class="qr-img" id="pay-qr" alt="Demo payment QR code" width="220" height="220">
+      <div class="pay-countdown" id="pay-countdown" aria-live="polite">2:00</div>
+      <span class="countdown-label">Session expires in</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SCREEN: PAYMENT SUCCESS
+     ================================================================ -->
+<section class="screen" id="screen-paysuccess" aria-hidden="true">
+  <span class="paysuccess-check" aria-label="Payment successful"><svg class="success-check" viewBox="0 0 64 64" aria-hidden="true"><circle class="success-check-circle" cx="32" cy="32" r="28"/><path class="success-check-tick" d="M18 33l9 9 19-20"/></svg></span>
+  <h2 class="paysuccess-title">Payment Successful</h2>
+  <div class="paysuccess-info">
+    <span class="paysuccess-row">Amount: <strong id="paysuccess-amount"></strong></span>
+    <span class="paysuccess-row">Order: <strong id="paysuccess-order"></strong></span>
+    <span class="paysuccess-row">Time: <strong id="paysuccess-time"></strong></span>
+    <span class="paysuccess-row">Item: <strong id="paysuccess-item"></strong></span>
+    <span class="paysuccess-row">Compartment: <strong id="paysuccess-comp"></strong></span>
+  </div>
+  <span class="paysuccess-auto">Dispensing in a moment…</span>
+</section>
+
+<!-- ================================================================
+     SCREEN: DISPENSING
+     ================================================================ -->
+<section class="screen" id="screen-dispensing" aria-hidden="true">
+  <span class="dispensing-status" id="dispensing-status">Dispensing…</span>
+
+  <!-- Dome, arm, tray, packet -->
+  <div class="dispense-rig" aria-hidden="true">
+    <div class="dome"></div>
+    <div class="servo-pivot"></div>
+    <div class="servo-arm" id="servo-arm"></div>
+    <div class="servo-packet" id="servo-packet"></div>
+    <div class="servo-tray"></div>
+  </div>
+
+  <span class="dispensing-letter" id="dispensing-letter" aria-hidden="true"></span>
+</section>
+
+<!-- ================================================================
+     SCREEN: COLLECT
+     ================================================================ -->
+<section class="screen" id="screen-collect" aria-hidden="true">
+  <span class="collect-icon" id="collect-icon"><svg class="success-check" viewBox="0 0 64 64" aria-hidden="true"><circle class="success-check-circle" cx="32" cy="32" r="28"/><path class="success-check-tick" d="M18 33l9 9 19-20"/></svg></span>
+  <h2 class="collect-msg" id="collect-msg">Please collect your packet from the tray.</h2>
+  <span class="collect-sub" id="collect-sub"></span>
+  <span class="collect-auto">Returning to start in 12 seconds…</span>
+  <button class="btn-collect-home" id="collect-home">← Back to start</button>
+</section>
+
+<!-- ================================================================
+     SCREEN: SETTINGS (hidden — long-press logo)
+     ================================================================ -->
+<section class="screen" id="screen-settings" aria-hidden="true">
+  <h2 class="settings-title">⚙️ Connection Settings</h2>
+
+  <div class="settings-group">
+    <label class="settings-label" for="settings-device-id">Device ID</label>
+    <input class="settings-input" type="text" id="settings-device-id" placeholder="e.g. sc360-7f3k9q">
+  </div>
+  <div class="settings-group">
+    <label class="settings-label" for="settings-token">Token</label>
+    <input class="settings-input" type="text" id="settings-token">
+  </div>
+  <div class="settings-group">
+    <label class="settings-label" for="settings-broker">MQTT Broker (wss://)</label>
+    <input class="settings-input" type="url" id="settings-broker" placeholder="wss://broker.hivemq.com:8884/mqtt">
+  </div>
+
+  <div class="settings-result" id="settings-test-result"></div>
+
+  <div class="settings-actions">
+    <button class="btn-settings btn-settings-primary" id="settings-save">Save &amp; Reconnect</button>
+    <button class="btn-settings btn-settings-secondary" id="settings-test">Test Connection</button>
+    <button class="btn-settings btn-settings-secondary" id="settings-back">← Back</button>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<footer class="footer">
+  <span class="footer-text">College demonstration with dummy packets. Not a medical diagnosis or prescription. In an emergency, call 112.</span>
+</footer>
+
+<!-- ================================================================
+     SCRIPTS — config first, then connection, then vendor, then app
+     ================================================================ -->
+<script src="js/config.js"></script>
+<script src="js/connection.js"></script>
+<script src="js/vendor/qrcode.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // Wire up detail back button (dynamic — either back to diagnosis or emergency)
+  document.getElementById("detail-back").addEventListener("click", function() {
+    // Go back to whichever grid we came from — app.js sets data-from
+    var from = document.getElementById("screen-detail").dataset.from;
+    var targetId = from === "emergency" ? "screen-emergency" : "screen-diagnosis";
+    document.querySelectorAll(".screen").forEach(function(el) {
+      el.classList.remove("screen-active");
+      el.setAttribute("aria-hidden", "true");
+    });
+    var t = document.getElementById(targetId);
+    if (t) { t.classList.add("screen-active"); t.setAttribute("aria-hidden", "false"); }
+  });
+
+  // Emergency 112 on grid header
+  document.getElementById("emerg-grid-112").addEventListener("click", function() {
+    if (/Android|iPhone/i.test(navigator.userAgent)) window.location.href = "tel:112";
+    else alert("Emergency: 112\n\nOn a phone this would dial 112.");
+  });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  }
+</script>
+
+</body>
+</html>
