@@ -64,8 +64,8 @@ def inline_js(html, web_dir):
             print(f"  WARNING: JS file not found: {js_path}")
             return match.group(0)
 
-    # Match <script src="..."></script>  (not external CDN scripts)
-    pattern = r'<script\s+src="([^"]*(?:config|connection|app)[^"]*)"[^>]*></script>'
+    # Match all local <script src="..."></script> tags (excludes http:// CDN scripts)
+    pattern = r'<script\s+src="([^"http][^"]*)"[^>]*></script>'
     return re.sub(pattern, replacer, html)
 
 
@@ -189,3 +189,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

@@ -93,3 +93,4 @@ For the best experience, **lock the tablet to landscape mode:**
 | Vercel page loads but ESP32 not found | Both devices must be on the same network with internet. Check ESP32 LCD shows "Cloud ready". |
 | App looks zoomed in / too big | In Chrome, tap ⋮ → zoom out to 90% or 80%. |
 | Servo animation but no real dispensing | You're in Demo mode. Connect to the ESP32. |
+

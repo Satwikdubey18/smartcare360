@@ -5,6 +5,8 @@ firmware/SmartCare360/secrets.h
 
 # Generated files
 firmware/SmartCare360/dashboard_html.h
+SmartCare360_Complete/
+*.local
 
 # Arduino build output
 firmware/SmartCare360/build/
@@ -27,3 +29,4 @@ node_modules/
 
 # Vercel
 .vercel/
+

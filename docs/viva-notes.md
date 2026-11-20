@@ -187,3 +187,4 @@ We deploy to **Vercel** as a static site — no server needed. Push the code to 
 | Retained Message | An MQTT message stored by the broker and sent to new subscribers |
 | UUID | Universally Unique Identifier — a random string to identify each command |
 | CDN | Content Delivery Network — Vercel serves your files from servers worldwide |
+

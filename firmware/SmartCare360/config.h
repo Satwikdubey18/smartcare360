@@ -95,3 +95,4 @@ static const char COMP_DIR[]  = {'L','R','L','R','L','R','L','R'};
 #define DEDUP_BUFFER_SIZE 5
 
 #endif // CONFIG_H
+

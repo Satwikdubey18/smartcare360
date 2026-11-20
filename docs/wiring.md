@@ -84,3 +84,4 @@ External 5V PSU ──┬── 5V ──► All servo VCC (red wires)
 - If a servo jitters at rest, it may be a power issue — add a **100 µF capacitor** across the servo's VCC and GND.
 - The LCD contrast is adjustable with the small blue potentiometer on the I2C backpack.
 - The firmware auto-detects the LCD I2C address (tries 0x27, 0x3F, 0x20).
+
